@@ -15,7 +15,7 @@
       fastlauncher_next-package = pkgs.callPackage ./package.nix {};
     in {
       packages = rec {
-        fastlauncher_next = fastlauncher-package;
+        fastlauncher_next = fastlauncher_next-package;
         default = fastlauncher_next;
       };
 

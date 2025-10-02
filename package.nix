@@ -2,7 +2,7 @@
   buildGoModule
 }:
 buildGoModule {
-  name = "fastlauncher";
+  name = "fastlauncher_next";
   src = ./.;
-  vendorHash = "sha256-fgWSMenYMMjO3iXIwOZ3kZ4l24AAGrxGPYVU3X9W80E=";
+  vendorHash = "sha256-841yImq+KLsrcDqgT7h4igXKRrNS2t3fpWNYxolplAY=";
 }
