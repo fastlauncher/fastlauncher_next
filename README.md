@@ -1,6 +1,6 @@
-# FastLauncher
+# FastLauncher Next
 
-TUI Application Launcher. Alternative to rofi/wofi
+GUI version for fastlauncher
 
 ![main windows](https://github.com/fastlauncher/fastlauncher_next/blob/main/guides/screenshots/main.png?raw=true)
 
