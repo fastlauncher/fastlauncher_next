@@ -10,7 +10,7 @@ Linux - Done(Xorg only)
 
 Windows - Work in progress
 
-Mac Os - Work in progress
+Mac Os - Done
 
 
 ## Installation

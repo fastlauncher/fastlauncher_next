@@ -2,8 +2,10 @@
 package ui
 
 import (
+	"errors"
 	"image/color"
 	"log"
+	"runtime"
 	"strings"
 
 	"fyne.io/fyne/v2"
@@ -91,8 +93,13 @@ func (m *uiModel) executeCommand(cmd string) {
 	log.Println("command:", cmd)
 
 	// Используем apprunner из TUI версии
-	// TODO: GET OS
-	runner, err := apprunner.GetAppRunner(apprunner.OsLinux) // или определите ОС динамически
+
+	osForRunner, err := m.getRunnerOs()
+	if err != nil {
+		log.Println("getRunnerOs err:", err)
+	}
+
+	runner, err := apprunner.GetAppRunner(osForRunner)
 	if err != nil {
 		log.Println("GetAppRunner error:", err)
 		return
@@ -371,4 +378,16 @@ func StartUI(apps []model.App) {
 	m.updateList()
 
 	myWindow.ShowAndRun()
+}
+
+func (u *uiModel) getRunnerOs() (string, error) {
+	currentOs := runtime.GOOS
+	switch currentOs {
+	case "darwin":
+		return apprunner.OsMacOs, nil
+	case "linux":
+		return apprunner.OsLinux, nil
+	}
+
+	return "", errors.New("OS is not support")
 }
