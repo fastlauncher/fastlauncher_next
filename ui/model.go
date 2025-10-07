@@ -15,6 +15,8 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"github.com/probeldev/fastlauncher/model"
 	"github.com/probeldev/fastlauncher/pkg/apprunner"
+
+	"github.com/lithammer/fuzzysearch/fuzzy"
 )
 
 type uiModel struct {
@@ -38,32 +40,12 @@ func (m *uiModel) filterItems(query string) []model.App {
 
 	for _, item := range m.items {
 		title := strings.ToLower(item.Title)
-		if fuzzyMatch(title, query) {
+		if fuzzy.Match(query, title) {
 			filtered = append(filtered, item)
 		}
 	}
 
 	return filtered
-}
-
-// fuzzyMatch проверяет, можно ли найти query как подпоследовательность в str
-func fuzzyMatch(str, query string) bool {
-	if query == "" {
-		return true
-	}
-	if str == "" {
-		return false
-	}
-
-	// Ищем первую букву запроса в строке
-	firstChar := query[0]
-	pos := strings.IndexByte(str, firstChar)
-	if pos == -1 {
-		return false
-	}
-
-	// Рекурсивно проверяем оставшуюся часть запроса
-	return fuzzyMatch(str[pos+1:], query[1:])
 }
 
 // updateList обновляет содержимое списка
