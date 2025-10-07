@@ -80,6 +80,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/probeldev/fastlauncher v0.0.2 h1:T0Ynq2pzN4ZWnsglf+yqGYKpDSnWXRTGpuVlKe2pgkc=
 github.com/probeldev/fastlauncher v0.0.2/go.mod h1:bpB5xhZoewdFeWiSBsu2ddrmvvk+qCnGCOdAni9Cbws=
+github.com/probeldev/fastlauncher v0.0.3 h1:McKWnfWp8U/VxzXr13wK9+gGrL87sd95xjAS9KHAr6I=
+github.com/probeldev/fastlauncher v0.0.3/go.mod h1:Vr2ZCpgiHgLf0xFilBbdxfRiaJJ3CU5AbWlVxwUTBi0=
 github.com/rivo/tview v0.0.0-20250501113434-0c592cd31026 h1:ij8h8B3psk3LdMlqkfPTKIzeGzTaZLOiyplILMlxPAM=
 github.com/rivo/tview v0.0.0-20250501113434-0c592cd31026/go.mod h1:02iFIz7K/A9jGCvrizLPvoqr4cEIx7q54RH5Qudkrss=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=

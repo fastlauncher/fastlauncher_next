@@ -4,5 +4,5 @@
 buildGoModule {
   name = "fastlauncher_next";
   src = ./.;
-  vendorHash = "sha256-841yImq+KLsrcDqgT7h4igXKRrNS2t3fpWNYxolplAY=";
+  vendorHash = "sha256-Ee4P61jVYr486C7h2r141NyUuTEsQOiYIi7ZEhkvGzg=";
 }
