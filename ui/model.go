@@ -6,17 +6,15 @@ import (
 	"image/color"
 	"log"
 	"runtime"
-	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	filteritems "github.com/probeldev/fastlauncher/filterItems"
 	"github.com/probeldev/fastlauncher/model"
 	"github.com/probeldev/fastlauncher/pkg/apprunner"
-
-	"github.com/lithammer/fuzzysearch/fuzzy"
 )
 
 type uiModel struct {
@@ -29,28 +27,12 @@ type uiModel struct {
 	ignoreSelection bool // Флаг для игнорирования события выбора
 }
 
-// filterItems фильтрует элементы по запросу (fuzzy search как в TUI версии)
-func (m *uiModel) filterItems(query string) []model.App {
-	if query == "" {
-		return m.items
-	}
-
-	query = strings.ToLower(query)
-	var filtered []model.App
-
-	for _, item := range m.items {
-		title := strings.ToLower(item.Title)
-		if fuzzy.Match(query, title) {
-			filtered = append(filtered, item)
-		}
-	}
-
-	return filtered
-}
-
 // updateList обновляет содержимое списка
 func (m *uiModel) updateList() {
-	m.filtered = m.filterItems(m.input.Text)
+	m.filtered = filteritems.FilterItems(
+		m.items,
+		m.input.Text,
+	)
 
 	// Сбрасываем текущий элемент при обновлении списка
 	if len(m.filtered) > 0 {

@@ -7,7 +7,7 @@ require (
 	fyne.io/fyne/v2 v2.6.3
 	github.com/gdamore/tcell/v2 v2.8.1
 	github.com/lithammer/fuzzysearch v1.1.8
-	github.com/probeldev/fastlauncher v0.0.3
+	github.com/probeldev/fastlauncher v0.0.4
 	github.com/rivo/tview v0.0.0-20250501113434-0c592cd31026
 )
 
