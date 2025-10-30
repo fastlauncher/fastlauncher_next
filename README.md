@@ -1,6 +1,6 @@
 # FastLauncher Next
 
-GUI version for fastlauncher
+GUI version for [fastlauncher](https://github.com/fastlauncher/fastlauncher)
 
 ![main windows](https://github.com/fastlauncher/fastlauncher_next/blob/main/guides/screenshots/main.png?raw=true)
 
