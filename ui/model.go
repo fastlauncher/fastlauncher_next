@@ -19,6 +19,7 @@ import (
 
 type uiModel struct {
 	items           []model.App
+	isAeroSpace     bool
 	filtered        []model.App
 	input           *widget.Entry
 	list            *widget.List
@@ -68,6 +69,8 @@ func (m *uiModel) executeCommand(cmd string) {
 		log.Println("GetAppRunner error:", err)
 		return
 	}
+
+	cmd += " & sleep 1 && aerospace move-node-to-workspace $(aerospace list-workspaces --focused)"
 
 	err = runner.Run(cmd)
 	if err != nil {
@@ -281,7 +284,7 @@ func (e *CustomEntry) SetOnEnter(handler func()) {
 	e.onEnter = handler
 }
 
-func StartUI(apps []model.App) {
+func StartUI(apps []model.App, isAeroSpace bool) {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Fast Launcher")
 	myWindow.SetFixedSize(true)

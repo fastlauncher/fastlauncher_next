@@ -10,12 +10,13 @@ import (
 
 func main() {
 	cfgPath := flag.String("config", "", "Path to config file")
+	isAeroSpace := flag.Bool("aerospace", false, "Fix for MacOs AeroSpace")
 	flag.Parse()
 
 	if cfgPath != nil && *cfgPath != "" {
 		ca := mode.ConfigMode{}
 		apps := ca.GetFromFile(*cfgPath)
-		ui.StartUI(apps)
+		ui.StartUI(apps, *isAeroSpace)
 		return
 	}
 
@@ -26,5 +27,5 @@ func main() {
 		log.Println(err)
 	}
 
-	ui.StartUI(apps)
+	ui.StartUI(apps, *isAeroSpace)
 }
