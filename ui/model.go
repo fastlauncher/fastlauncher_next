@@ -5,6 +5,7 @@ import (
 	"errors"
 	"image/color"
 	"log"
+	"os"
 	"runtime"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/widget"
 	filteritems "github.com/probeldev/fastlauncher/filterItems"
 	"github.com/probeldev/fastlauncher/model"
@@ -55,12 +57,10 @@ func (m *uiModel) updateList() {
 
 // executeCommand выполняет команду (аналогично TUI версии)
 func (m *uiModel) executeCommand(cmd string) {
-
-	// Используем apprunner из TUI версии
-
-	osForRunner, err := m.getRunnerOs()
+	osForRunner, err := getRunnerOs()
 	if err != nil {
 		log.Println("getRunnerOs err:", err)
+		return
 	}
 
 	runner, err := apprunner.GetAppRunner(osForRunner)
@@ -75,6 +75,17 @@ func (m *uiModel) executeCommand(cmd string) {
 		log.Println("Run error:", err)
 		return
 	}
+}
+
+func getRunnerOs() (string, error) {
+	currentOs := runtime.GOOS
+	switch currentOs {
+	case "darwin":
+		return apprunner.OsMacOs, nil
+	case "linux":
+		return apprunner.OsLinux, nil
+	}
+	return "", errors.New("OS is not support")
 }
 
 // moveSelection перемещает выделение вверх или вниз
@@ -103,13 +114,18 @@ func (m *uiModel) executeSelected() {
 		selectedKey := m.filtered[m.currentItem].Title
 		if cmd, exists := m.getSelectedApp(selectedKey); exists {
 			m.executeCommand(cmd.Command)
+
+			// Скрываем окно
 			m.window.Hide()
+
+			// Запускаем фоновую задачу
 			go func() {
 				if m.isAeroSpace {
-					time.Sleep(50000 * time.Millisecond) // 50 секунд
+					time.Sleep(20 * time.Second)
 				}
-				// После ожидания закрываем приложение
+				// Закрываем приложение
 				m.window.Close()
+				os.Exit(0)
 			}()
 		}
 	}
@@ -121,17 +137,12 @@ func (m *uiModel) getSelectedApp(
 	model.App,
 	bool,
 ) {
-	// TODO крайне сомнительный способ получать приложение по тайтлу
-	exists := false
-
 	for _, app := range m.items {
 		if app.Title == selectedKey {
-			exists = true
-			return app, exists
+			return app, true
 		}
 	}
-
-	return model.App{}, exists
+	return model.App{}, false
 }
 
 // CustomListItem создает кастомный элемент списка с выделением
@@ -157,7 +168,7 @@ func NewCustomListItem(title, description string, isSelected bool) *CustomListIt
 	item.description.TextSize = 12
 
 	if isSelected {
-		item.background.FillColor = color.NRGBA{R: 0x33, G: 0x99, B: 0xff, A: 0x99} // Голубой с прозрачностью
+		item.background.FillColor = color.NRGBA{R: 0x33, G: 0x99, B: 0xff, A: 0x99}
 		item.title.Color = color.White
 		item.description.Color = color.White
 	} else {
@@ -190,7 +201,6 @@ func (m *uiModel) createCustomList() *widget.List {
 			return len(m.filtered)
 		},
 		func() fyne.CanvasObject {
-			// Создаем элемент с дефолтными значениями
 			return NewCustomListItem("template", "description", false)
 		},
 		func(i widget.ListItemID, o fyne.CanvasObject) {
@@ -198,11 +208,9 @@ func (m *uiModel) createCustomList() *widget.List {
 				key := m.filtered[i]
 				item := o.(*CustomListItem)
 
-				// Обновляем текст
 				item.title.Text = key.Title
 				item.description.Text = key.Description
 
-				// Обновляем выделение
 				item.isSelected = (i == m.currentItem)
 				if item.isSelected {
 					item.background.FillColor = color.NRGBA{R: 0x33, G: 0x99, B: 0xff, A: 0x99}
@@ -221,7 +229,6 @@ func (m *uiModel) createCustomList() *widget.List {
 		},
 	)
 
-	// Обработка выбора из списка - только при клике мышью
 	list.OnSelected = func(id widget.ListItemID) {
 		if !m.ignoreSelection {
 			m.currentItem = id
@@ -244,7 +251,6 @@ type CustomEntry struct {
 func NewCustomEntry() *CustomEntry {
 	entry := &CustomEntry{}
 	entry.ExtendBaseWidget(entry)
-	// entry.Wrapping = fyne.TextTruncation
 	return entry
 }
 
@@ -255,12 +261,12 @@ func (e *CustomEntry) TypedKey(key *fyne.KeyEvent) {
 		if e.onArrowUp != nil {
 			e.onArrowUp()
 		}
-		return // Предотвращаем стандартную обработку
+		return
 	case fyne.KeyDown:
 		if e.onArrowDown != nil {
 			e.onArrowDown()
 		}
-		return // Предотвращаем стандартную обработку
+		return
 	case fyne.KeyReturn, fyne.KeyEnter:
 		if e.onEnter != nil {
 			e.onEnter()
@@ -269,7 +275,6 @@ func (e *CustomEntry) TypedKey(key *fyne.KeyEvent) {
 		}
 		return
 	default:
-		// Для остальных клавиш вызываем стандартный обработчик
 		e.Entry.TypedKey(key)
 	}
 }
@@ -296,17 +301,22 @@ func StartUI(apps []model.App, isAeroSpace bool) {
 	myWindow.Resize(fyne.NewSize(600, 400))
 	myWindow.CenterOnScreen()
 
-	// Создаём модель как в TUI версии
 	m := &uiModel{
 		items:       apps,
 		window:      myWindow,
 		isAeroSpace: isAeroSpace,
 	}
 
-	// Используем кастомное поле ввода
 	input := NewCustomEntry()
 	input.SetPlaceHolder("Введите команду для поиска...")
 	m.input = &input.Entry
+
+	list := m.createCustomList()
+	m.list = list
+
+	input.OnChanged = func(text string) {
+		m.updateList()
+	}
 
 	// Устанавливаем обработчики стрелок
 	input.SetOnArrowUp(func() {
@@ -319,11 +329,7 @@ func StartUI(apps []model.App, isAeroSpace bool) {
 		m.executeSelected()
 	})
 
-	// Создаем кастомный список
-	list := m.createCustomList()
-	m.list = list
-
-	// Обработка ввода - используем fuzzy search из TUI версии
+	// Обработка ввода
 	input.OnChanged = func(text string) {
 		m.updateList()
 	}
@@ -335,32 +341,37 @@ func StartUI(apps []model.App, isAeroSpace bool) {
 		}
 	})
 
-	// Компоновка как в Fyne версии
+	// Компоновка
 	content := container.NewBorder(
-		input, // сверху - поле ввода
+		input,
 		nil, nil, nil,
-		list, // по центру - список подсказок
+		list,
 	)
 
 	myWindow.SetContent(content)
-
-	// Фокус на поле ввода при открытии
 	myWindow.Canvas().Focus(input)
-
-	// Инициализируем список
 	m.updateList()
 
-	myWindow.ShowAndRun()
-}
-
-func (u *uiModel) getRunnerOs() (string, error) {
-	currentOs := runtime.GOOS
-	switch currentOs {
-	case "darwin":
-		return apprunner.OsMacOs, nil
-	case "linux":
-		return apprunner.OsLinux, nil
+	// Устанавливаем трей
+	if desk, ok := myApp.(desktop.App); ok {
+		menu := fyne.NewMenu("Fast Launcher",
+			fyne.NewMenuItem("Quit", func() {
+				myApp.Quit()
+			}),
+		)
+		desk.SetSystemTrayMenu(menu)
 	}
 
-	return "", errors.New("OS is not support")
+	// Показываем окно
+	myWindow.Show()
+
+	// Запускаем приложение
+	myApp.Run()
+}
+
+func main() {
+	apps := []model.App{
+		{Title: "Test App", Command: "open -a Calculator", Description: "Example command"},
+	}
+	StartUI(apps, true)
 }
