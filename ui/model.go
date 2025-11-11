@@ -75,9 +75,6 @@ func (m *uiModel) executeCommand(cmd string) {
 		log.Println("Run error:", err)
 		return
 	}
-	if m.isAeroSpace {
-		time.Sleep(5000 * time.Millisecond)
-	}
 }
 
 // moveSelection перемещает выделение вверх или вниз
@@ -106,7 +103,14 @@ func (m *uiModel) executeSelected() {
 		selectedKey := m.filtered[m.currentItem].Title
 		if cmd, exists := m.getSelectedApp(selectedKey); exists {
 			m.executeCommand(cmd.Command)
-			m.window.Close()
+			m.window.Hide()
+			go func() {
+				if m.isAeroSpace {
+					time.Sleep(50000 * time.Millisecond) // 50 секунд
+				}
+				// После ожидания закрываем приложение
+				m.window.Close()
+			}()
 		}
 	}
 }
@@ -294,8 +298,9 @@ func StartUI(apps []model.App, isAeroSpace bool) {
 
 	// Создаём модель как в TUI версии
 	m := &uiModel{
-		items:  apps,
-		window: myWindow,
+		items:       apps,
+		window:      myWindow,
+		isAeroSpace: isAeroSpace,
 	}
 
 	// Используем кастомное поле ввода
