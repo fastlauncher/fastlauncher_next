@@ -6,6 +6,7 @@ import (
 	"image/color"
 	"log"
 	"runtime"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -55,8 +56,6 @@ func (m *uiModel) updateList() {
 // executeCommand выполняет команду (аналогично TUI версии)
 func (m *uiModel) executeCommand(cmd string) {
 
-	log.Println("command:", cmd)
-
 	// Используем apprunner из TUI версии
 
 	osForRunner, err := m.getRunnerOs()
@@ -70,12 +69,14 @@ func (m *uiModel) executeCommand(cmd string) {
 		return
 	}
 
-	cmd += " & sleep 1 && aerospace move-node-to-workspace $(aerospace list-workspaces --focused)"
-
+	log.Println("command:", cmd)
 	err = runner.Run(cmd)
 	if err != nil {
 		log.Println("Run error:", err)
 		return
+	}
+	if m.isAeroSpace {
+		time.Sleep(500 * time.Millisecond)
 	}
 }
 
