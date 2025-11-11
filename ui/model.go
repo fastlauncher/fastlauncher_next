@@ -76,7 +76,7 @@ func (m *uiModel) executeCommand(cmd string) {
 		return
 	}
 	if m.isAeroSpace {
-		time.Sleep(500 * time.Millisecond)
+		time.Sleep(5000 * time.Millisecond)
 	}
 }
 
