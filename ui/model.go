@@ -368,10 +368,3 @@ func StartUI(apps []model.App, isAeroSpace bool) {
 	// Запускаем приложение
 	myApp.Run()
 }
-
-func main() {
-	apps := []model.App{
-		{Title: "Test App", Command: "open -a Calculator", Description: "Example command"},
-	}
-	StartUI(apps, true)
-}
