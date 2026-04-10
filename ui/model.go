@@ -274,6 +274,8 @@ func (e *CustomEntry) TypedKey(key *fyne.KeyEvent) {
 			e.Entry.TypedKey(key)
 		}
 		return
+	case fyne.KeyEscape:
+		os.Exit(0)
 	default:
 		e.Entry.TypedKey(key)
 	}
